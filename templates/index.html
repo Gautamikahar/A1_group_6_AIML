@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Automatic Attendance System</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            background: url("{{ url_for('static', filename='cummins.jpg') }}") no-repeat center center/cover;
+
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            width: 450px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 28px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        }
+
+        label {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        select {
+            width: 70%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background: #000;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        #camera {
+            margin-top: 20px;
+            width: 100%;
+            display: none;
+        }
+
+        #video_feed {
+            width: 100%;
+            border: 3px solid white;
+            border-radius: 15px;
+            margin-top: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- COLLEGE NAME HEADING -->
+        <h1>MKSS Cummins College of Engineering</h1>
+        <h2>Automatic Attendance System</h2>
+
+        <!-- SECTION SELECTION -->
+        <label>Select Your Division:</label>
+        <br>
+        <select id="divisionSelect">
+            <option value="">-- Select Section --</option>
+            <option value="A">DIV - A</option>
+            <option value="B">DIV - B</option>
+            <option value="C">DIV - C</option>
+        </select>
+
+        <!-- CAMERA BOX -->
+        <div id="camera">
+            <img id="video_feed" src="">
+        </div>
+
+        <!-- BUTTONS -->
+        <div>
+            <button id="startBtn">Start Camera</button>
+            <button id="stopBtn">Stop Camera</button>
+        </div>
+
+        <a href="/attendance">See Attendance</a>
+    </div>
+
+    <script>
+        const video = document.getElementById("video_feed");
+        const cameraDiv = document.getElementById("camera");
+        const startBtn = document.getElementById("startBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const divisionSelect = document.getElementById("divisionSelect");
+
+        startBtn.onclick = async () => {
+            const division = divisionSelect.value;
+
+            if (!division) {
+                alert("Please select your division first!");
+                return;
+            }
+
+            const res = await fetch("/start_camera", { method: "POST" });
+            const data = await res.json();
+
+            if (data.status === "started" || data.status === "already_running") {
+                video.src = "/video?div=" + division;
+                cameraDiv.style.display = "block";
+            }
+        };
+
+        stopBtn.onclick = async () => {
+            const res = await fetch("/stop_camera", { method: "POST" });
+            const data = await res.json();
+
+            if (data.status === "stopped" || data.status === "already_stopped") {
+                video.src = "";
+                cameraDiv.style.display = "none";
+            }
+        };
+    </script>
+</body>
+</html>

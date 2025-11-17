@@ -1,0 +1,11 @@
+body {
+  background: #f7f7f7;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.video-container {
+  margin-top: 20px;
+  border: 5px solid #333;
+  display: inline-block;
+}
